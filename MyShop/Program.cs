@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 //builder.Services.AddDbContext<MyShop215736745Context>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("School")));
+builder.Services.AddDbContext<MyShop215736745Context>(options =>
+   options.UseSqlServer(builder.Configuration.GetConnectionString("Home")));
 
 builder.Services.AddTransient<IUsersRepository,UsersRepository>();
 
