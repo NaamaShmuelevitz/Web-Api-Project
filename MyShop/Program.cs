@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MyShop;
+using MyShop.Middleware;
 using NLog.Web;
 using PresidentsApp.Middlewares;
 using Repositories;
@@ -51,6 +52,8 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<IJwtService, JwtService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,6 +73,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseStaticFiles();
+
+// Add JWT authentication middleware before authorization
+app.UseJwtCookieAuthentication();
 
 app.MapControllers();
 

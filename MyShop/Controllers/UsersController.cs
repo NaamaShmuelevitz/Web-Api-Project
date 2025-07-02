@@ -5,10 +5,12 @@ using Services;
 using DTO;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MyShop.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -16,12 +18,14 @@ namespace MyShop.Controllers
         IUserService _userServices;
         IMapper _mapper;
         ILogger<UsersController> _logger;
+        IJwtService _jwtService;
 
-        public UsersController(IUserService userServices, IMapper mapper, ILogger<UsersController> logger)
+        public UsersController(IUserService userServices, IMapper mapper, ILogger<UsersController> logger, IJwtService jwtService)
         {
             _userServices = userServices;
             _mapper = mapper;
             _logger = logger;
+            _jwtService = jwtService;
         }
 
         // GET api/<UsersController>/5
@@ -35,18 +39,31 @@ namespace MyShop.Controllers
         // POST api/<UsersController>
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<GetUserDTO>> Login([FromQuery] string userName , [FromQuery] string password)
+        [AllowAnonymous]
+        public async Task<ActionResult<User>> Login([FromQuery] string userName, [FromQuery] string password)
         {
-            User user=await _userServices.LoginUser(userName, password);
-            if (user != null)
+            _logger.LogInformation("Login attempt for user: {UserName}", userName);
+            User checkUser = await _userServices.LoginUser(userName, password);
+            if (checkUser != null)
             {
-                _logger.LogInformation($"User name: {user.UserName} Name: {user.FirstName} {user.LastName}");
-                return Ok(_mapper.Map<User, GetUserDTO>(user));
+                _logger.LogInformation("User {UserId} logged in successfully", checkUser.UserId);
+                // Generate JWT token after successful login
+                var token = _jwtService.GenerateToken(checkUser);
+                Response.Cookies.Append("jwtToken", token, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true, // Set to true in production
+                    SameSite = SameSiteMode.Strict,
+                    Expires = DateTime.UtcNow.AddMinutes(1)
+                });
+                return Ok(checkUser);
             }
-             return BadRequest();
+            _logger.LogWarning("Login failed for user: {UserName}", userName);
+            return BadRequest("Invalid username or password");
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<User>> Register([FromBody] RegisterUserDTO registerUserDTO)
         {
             try
