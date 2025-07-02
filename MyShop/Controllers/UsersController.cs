@@ -54,7 +54,7 @@ namespace MyShop.Controllers
                     HttpOnly = true,
                     Secure = true, // Set to true in production
                     SameSite = SameSiteMode.Strict,
-                    Expires = DateTime.UtcNow.AddMinutes(1)
+                    Expires = DateTime.UtcNow.AddMinutes(60)
                 });
                 return Ok(checkUser);
             }
