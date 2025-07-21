@@ -83,6 +83,7 @@ namespace MyShop.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("password")]
         public int CheckPassword([FromBody] String password)
         {
