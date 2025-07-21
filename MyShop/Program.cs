@@ -97,8 +97,9 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
-// Add JWT authentication middleware before authorization
-app.UseJwtCookieAuthentication();
+app.UseJwtMiddleware();
+
+app.UseCspMiddleware();
 
 app.MapControllers();
 

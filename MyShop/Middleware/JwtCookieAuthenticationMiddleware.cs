@@ -63,7 +63,7 @@ namespace MyShop.Middleware
 
     public static class JwtCookieAuthenticationMiddlewareExtensions
     {
-        public static WebApplication UseJwtCookieAuthentication(this WebApplication app)
+        public static WebApplication UseJwtMiddleware(this WebApplication app)
         {
             app.UseMiddleware<JwtCookieAuthenticationMiddleware>();
             return app;
