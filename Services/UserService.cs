@@ -20,7 +20,12 @@ public class UserService : IUserService
     }
     public async Task<User> LoginUser(string userName, string password)
     {
-        return await _userRepository.LoginUser(userName, password);
+        var user = await _userRepository.GetByUserName(userName);
+        if (user == null)
+            return null;
+        if (BCrypt.Net.BCrypt.Verify(password, user.Password))
+            return user;
+        return null;
     }
 
     public async Task<User> GetById(int id)
@@ -35,8 +40,10 @@ public class UserService : IUserService
         {
             throw new Exception("Weak password");
         }
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         return await _userRepository.Register(user);
     }
+
 
     public async Task<User> UpdateUser(int id, User user)
     {

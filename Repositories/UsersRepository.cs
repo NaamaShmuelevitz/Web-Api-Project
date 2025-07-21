@@ -19,11 +19,10 @@ public class UsersRepository : IUsersRepository
         return await _context.Users.Include(u => u.Orders).FirstOrDefaultAsync(user => user.UserId == id);
     }
 
-    //Login
-    public async Task<User> LoginUser(string userName, string password)
+    // שליפה לפי שם משתמש
+    public async Task<User> GetByUserName(string userName)
     {
-        User userFound= await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName && user.Password == password);
-        return userFound;
+        return await _context.Users.FirstOrDefaultAsync(user => user.UserName == userName);
     }
 
     //Register

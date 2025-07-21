@@ -99,7 +99,7 @@ public partial class MyShop215736745Context : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .HasColumnName("Last_Name");
-            entity.Property(e => e.Password).HasMaxLength(50);
+            entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
                 .HasColumnName("User_Name");
